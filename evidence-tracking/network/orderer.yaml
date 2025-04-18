@@ -3,13 +3,15 @@ General:
   ListenAddress: 0.0.0.0
   ListenPort: 7050
   TLS:
-    Enabled: false
+    Enabled: true
+    Certificate: /var/hyperledger/orderer/tls/server.crt
+    PrivateKey: /var/hyperledger/orderer/tls/server.key
+    RootCAs:
+      - /var/hyperledger/orderer/tls/ca.crt
   Keepalive:
     ServerMinInterval: 60s
     ServerInterval: 7200s
     ServerTimeout: 20s
-  LogLevel: INFO
-  LogFormat: '%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}'
   GenesisMethod: none
   BootstrapMethod: none
   LocalMSPDir: /var/hyperledger/orderer/msp
@@ -26,4 +28,6 @@ ChannelParticipation:
 Admin:
   ListenAddress: 0.0.0.0:7053
   TLS:
-    Enabled: false 
+    Enabled: true
+    Certificate: /var/hyperledger/orderer/tls/server.crt
+    PrivateKey: /var/hyperledger/orderer/tls/server.key 

@@ -6,6 +6,9 @@ set -e
 # don't rewrite paths for Windows Git Bash users
 export MSYS_NO_PATHCONV=1
 
+# Set the config path
+export FABRIC_CFG_PATH=${PWD}
+
 # Function to check if required files exist
 checkPrerequisites() {
     echo "Checking prerequisites..."
@@ -37,7 +40,7 @@ waitForOrderer() {
 # Function to verify TLS certificates
 verifyTLSCerts() {
     echo "Verifying TLS certificates..."
-    local ORDERER_CA="/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
+    local ORDERER_CA="/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
     if ! docker exec cli test -f "$ORDERER_CA"; then
         echo "Error: TLS certificates not found in expected location"
         exit 1
@@ -61,7 +64,7 @@ echo "Generating crypto material..."
 cryptogen generate --config=./crypto-config.yaml
 
 echo "Generating channel configuration block..."
-configtxgen -profile TwoOrgsChannel -channelID evidence-tracking -outputBlock ./channel-artifacts/evidence-tracking.block
+configtxgen -profile TwoOrgsOrdererGenesis -channelID system-channel -outputBlock ./channel-artifacts/genesis.block
 
 echo "Generating channel transaction..."
 configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID evidence-tracking
@@ -77,13 +80,20 @@ docker-compose up -d
 echo "Waiting for network to start..."
 sleep 30
 
+# Verify TLS certificates
+verifyTLSCerts
+
+# TLS parameters for CLI commands
+ORDERER_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
+PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+
 echo "Creating channel..."
-docker exec cli peer channel create -o orderer.example.com:7050 -c evidence-tracking -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/channel.tx --outputBlock /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/evidence-tracking.block
+docker exec cli peer channel create -o orderer.example.com:7050 -c evidence-tracking -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/channel.tx --outputBlock /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/evidence-tracking.block --tls --cafile $ORDERER_CA
 
 echo "Joining peer to the channel..."
 docker exec cli peer channel join -b /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/evidence-tracking.block
 
 echo "Updating anchor peers..."
-docker exec cli peer channel update -o orderer.example.com:7050 -c evidence-tracking -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/Org1MSPanchors.tx
+docker exec cli peer channel update -o orderer.example.com:7050 -c evidence-tracking -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/Org1MSPanchors.tx --tls --cafile $ORDERER_CA
 
 echo "Setup completed successfully!" 
