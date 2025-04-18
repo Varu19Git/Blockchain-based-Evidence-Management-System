@@ -1,98 +1,184 @@
 # Evidence Tracking System
 
-A blockchain-based evidence tracking system built with Hyperledger Fabric, Node.js, and React.js.
+A blockchain-based evidence management system for securely tracking the chain of custody for physical and digital evidence.
 
-## System Architecture
+## Overview
 
-- **Blockchain**: Hyperledger Fabric
-- **Backend**: Node.js + Express.js
-- **Frontend**: React.js + TypeScript + Tailwind CSS
-- **Storage**: PostgreSQL + IPFS
-- **Monitoring**: Hyperledger Explorer
-- **Security**: OAuth 2.0 + JWT
-
-## Prerequisites
-
-- Docker and Docker Compose
-- Node.js v14 or higher
-- Go 1.16 or higher
-- Hyperledger Fabric binaries and Docker images
-- IPFS
-- PostgreSQL
-
-## Directory Structure
-
-```
-evidence-tracking/
-├── chaincode/           # Hyperledger Fabric chaincode (smart contracts)
-├── web-app/            
-│   ├── frontend/       # React.js frontend application
-│   └── backend/        # Node.js backend server
-├── network/            # Hyperledger Fabric network configuration
-└── config/             # Configuration files
-```
-
-## Setup Instructions
-
-1. Install Prerequisites:
-   ```bash
-   # Install Fabric binaries and Docker images
-   curl -sSL https://bit.ly/2ysbOFE | bash -s
-   ```
-
-2. Start the Network:
-   ```bash
-   cd network
-   ./startNetwork.sh
-   ```
-
-3. Deploy Chaincode:
-   ```bash
-   ./deployChaincode.sh
-   ```
-
-4. Start the Backend:
-   ```bash
-   cd web-app/backend
-   npm install
-   npm start
-   ```
-
-5. Start the Frontend:
-   ```bash
-   cd web-app/frontend
-   npm install
-   npm start
-   ```
+The Evidence Tracking System provides a secure, transparent, and tamper-proof platform for law enforcement agencies to track the lifecycle of evidence from collection to disposal. By leveraging blockchain technology, the system ensures immutability of records and maintains a verifiable chain of custody.
 
 ## Features
 
-1. Evidence Submission
-   - Secure file upload with IPFS storage
-   - Blockchain-based hash verification
-   - Metadata storage in PostgreSQL
+- **Secure Authentication:** Role-based access control with JWT authentication
+- **Evidence Submission:** Digital upload of evidence with metadata
+- **Chain of Custody:** Complete audit trail of all evidence transfers
+- **Evidence Verification:** Supervisor verification workflow
+- **Role-Based Access Control:** Different access levels for officers, detectives, supervisors, and administrators
+- **Real-time Updates:** WebSocket-based notifications for evidence status changes
+- **Responsive UI:** Mobile-friendly interface for field use
 
-2. Audit Trail
-   - Immutable transaction history
-   - Real-time tracking
-   - Comprehensive logging
+## Tech Stack
 
-3. Access Control
-   - Role-based permissions
-   - Secure authentication
-   - Multi-factor authentication support
+### Frontend
+- **React.js:** UI library for building component-based interfaces
+- **React Router:** For client-side routing and navigation
+- **Context API:** For state management across components
+- **Tailwind CSS:** Utility-first CSS framework for responsive design
+- **Axios:** HTTP client for API communication
+- **Socket.io-client:** For real-time WebSocket communication
 
-4. Dashboard
-   - Real-time updates
-   - Evidence timeline
-   - Analytics and reporting
+### Backend
+- **Node.js:** JavaScript runtime for server-side code
+- **Express:** Web application framework
+- **JWT:** JSON Web Tokens for secure authentication
+- **Socket.io:** For real-time bidirectional event-based communication
+- **Multer:** For handling file uploads
+- **Hyperledger Fabric (planned):** Enterprise blockchain platform for production deployment
 
-## Development
+### Methodologies
+- **Context-based Authentication:** Using React Context API for managing auth state
+- **Protected Routes:** Route-based access control with role verification
+- **RESTful API Design:** Structured endpoints for resource management
+- **Responsive Design:** Mobile-first approach with Tailwind CSS
+- **Real-time Updates:** WebSocket implementation for instant notifications
 
-- Follow the coding standards in `.eslintrc` and `.prettierrc`
-- Write unit tests for all new features
-- Update documentation as needed
+## Installation
+
+### Prerequisites
+- Node.js (v14+)
+- npm or yarn
+- Docker and Docker Compose (for future blockchain implementation)
+
+### Setup
+
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/evidence-tracking.git
+cd evidence-tracking
+```
+
+2. Install backend dependencies
+```bash
+cd web-app/backend
+npm install
+```
+
+3. Install frontend dependencies
+```bash
+cd ../frontend
+npm install
+```
+
+4. Start the backend server
+```bash
+cd ../backend
+npm start
+```
+
+5. Start the frontend development server
+```bash
+cd ../frontend
+npm start
+```
+
+6. The application should be running at http://localhost:3000
+
+## Project Structure
+
+```
+evidence-tracking/
+├── chaincode/                # Hyperledger Fabric smart contracts
+├── chaincode-go/             # Go implementation of smart contracts
+├── network/                  # Hyperledger Fabric network config
+├── web-app/
+│   ├── backend/              # Node.js Express server
+│   │   ├── src/
+│   │   │   ├── routes/       # API routes
+│   │   │   ├── utils/        # Utility functions
+│   │   │   └── index.js      # Server entry point
+│   │
+│   └── frontend/             # React frontend
+│       ├── public/
+│       └── src/
+│           ├── components/   # Reusable UI components
+│           ├── context/      # React Context providers
+│           ├── pages/        # Page components
+│           └── App.js        # Main application component
+```
+
+## Authentication System
+
+The system implements a robust role-based authentication system with JWT tokens:
+
+- **JWT Token-based Auth:** Secure authentication with expiring tokens
+- **Role-based Access Control:** Different privileges for different roles
+- **User Management:** Admin interface for user approval and management
+
+### User Roles
+
+1. **Officer:** Can submit and view evidence
+2. **Detective:** Can view and analyze evidence
+3. **Supervisor:** Can verify and update evidence status
+4. **Administrator:** Full system access, user management
+
+### Login Credentials (Demo)
+
+#### Admin User
+- **Username:** admin
+- **Password:** admin123
+
+#### Officer
+- **Username:** jsmith
+- **Password:** password123
+
+#### Supervisor
+- **Username:** mjohnson
+- **Password:** password123
+
+#### Detective
+- **Username:** dcooper
+- **Password:** password123
+
+## UI Components
+
+The UI is built with a component-based architecture using React and styled with Tailwind CSS:
+
+- **Navigation:** Responsive navigation bar with role-based menu items
+- **Authentication:** Login and registration forms with validation
+- **Dashboard:** Role-specific dashboard with activity overview
+- **Evidence List:** Searchable and filterable evidence records
+- **Evidence Detail:** Comprehensive view of evidence information
+- **Evidence Submission:** Multi-step form for evidence upload
+- **Profile Management:** User profile editing capabilities
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/login`: User login
+- `POST /api/auth/register`: User registration
+- `GET /api/auth/me`: Get current user info
+
+### Evidence Management
+- `GET /api/evidence`: List all evidence
+- `GET /api/evidence/:id`: Get specific evidence details
+- `POST /api/evidence`: Submit new evidence
+- `PUT /api/evidence/:id/status`: Update evidence status
+
+## Future Enhancements
+
+1. **Blockchain Integration:** Full implementation with Hyperledger Fabric
+2. **Advanced Search:** Elasticsearch integration for complex queries
+3. **Evidence Analytics:** Statistical analysis and reporting features
+4. **Mobile App:** Native mobile applications for field use
+5. **Digital Evidence Processing:** Automated analysis of digital evidence
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the Apache License 2.0 
+This project is licensed under the MIT License - see the LICENSE file for details. 
