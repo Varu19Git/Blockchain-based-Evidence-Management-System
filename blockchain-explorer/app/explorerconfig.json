@@ -1,0 +1,47 @@
+{
+	"persistence": "postgreSQL",
+	"platforms": ["fabric"],
+	"postgreSQL": {
+	  "host": "127.0.0.1",
+	  "port": "5432",
+	  "database": "fabricexplorer",
+	  "username": "hppoc",
+	  "passwd": "password"
+	},
+	"sync": {
+	  "type": "local",
+	  "platform": "fabric",
+	  "blocksSyncTime": "1"
+	},
+	"jwt": {
+	  "secret": "a secret phrase!!",
+	  "expiresIn": "2h"
+	},
+	"log4jsConfig": {  
+	  "appenders": {
+		"rollingFile": {
+		  "type": "dateFile",
+		  "filename": "logs/explorer",
+		  "pattern": ".yyyy-MM-dd",
+		  "numBackups": 7,  
+		  "layout": {
+			"type": "pattern",
+			"pattern": "[%d] [%p] [%X{user}] [%X{orgName}] [%c] - %m%n"
+		  }
+		},
+		"console": {
+		  "type": "console",
+		  "layout": {
+			"type": "pattern",
+			"pattern": "[%d] [%p] [%X{user}] [%X{orgName}] [%c] - %m%n"
+		  }
+		}
+	  },
+	  "categories": {
+		"default": {
+		  "appenders": ["rollingFile", "console"],
+		  "level": "debug"
+		}
+	  }
+	}
+  }
