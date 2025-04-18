@@ -59,7 +59,11 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+      // The backend expects username, not email
+      // For this demo, we'll extract username from email (part before @)
+      const username = email.includes('@') ? email.split('@')[0] : email;
+      
+      const response = await axios.post(`${API_URL}/auth/login`, { username, password });
       
       if (response.data && response.data.token) {
         localStorage.setItem('authToken', response.data.token);
@@ -72,7 +76,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: errorMessage };
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Failed to login';
+      const errorMessage = err.response?.data?.error || 'Failed to login';
       setError(errorMessage);
       return { success: false, error: errorMessage };
     }
@@ -85,15 +89,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.post(`${API_URL}/auth/register`, userData);
       
-      if (response.data && response.data.success) {
-        return { success: true };
+      if (response.data && response.data.user) {
+        return { success: true, message: response.data.message };
       } else {
-        const errorMessage = response.data?.message || 'Registration failed';
+        const errorMessage = response.data?.error || 'Registration failed';
         setError(errorMessage);
         return { success: false, error: errorMessage };
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Failed to register';
+      const errorMessage = err.response?.data?.error || 'Failed to register';
       setError(errorMessage);
       return { success: false, error: errorMessage };
     }

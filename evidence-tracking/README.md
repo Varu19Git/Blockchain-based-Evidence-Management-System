@@ -102,23 +102,30 @@ npm start
 
 You can use the following credentials to test the application:
 
+> **Important Note:** The login screen asks for an email, but you should enter the **username** (not the full email) for authentication. The password remains the same.
+
 ### Admin User
+- **Username:** admin  
 - **Email:** admin@evidencetrack.org
 - **Password:** admin123
 
 ### Officer
+- **Username:** jsmith  
 - **Email:** jsmith@police.gov
 - **Password:** password123
 
 ### Supervisor
+- **Username:** mjohnson  
 - **Email:** mjohnson@police.gov
 - **Password:** password123
 
 ### Detective
+- **Username:** dcooper  
 - **Email:** dcooper@police.gov
 - **Password:** password123
 
 ### Pending Approval User
+- **Username:** rwilson  
 - **Email:** rwilson@police.gov
 - **Password:** password123
 
