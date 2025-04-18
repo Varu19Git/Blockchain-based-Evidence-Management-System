@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
-  const { currentUser, checkUserRole, logout } = useAuth();
+  const { currentUser, hasRole, logout } = useAuth();
   const [stats, setStats] = useState({
     totalEvidence: 0,
     pendingVerification: 0,
@@ -98,7 +98,7 @@ const Dashboard = () => {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="border-4 border-dashed border-gray-200 rounded-lg p-6">
-            {checkUserRole('admin') && (
+            {hasRole('admin') && (
               <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
                 <div className="px-4 py-5 sm:px-6">
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -135,7 +135,7 @@ const Dashboard = () => {
               </div>
             )}
             
-            {checkUserRole('police') && (
+            {hasRole('officer') && (
               <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
                 <div className="px-4 py-5 sm:px-6">
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -172,11 +172,11 @@ const Dashboard = () => {
               </div>
             )}
             
-            {checkUserRole('lab') && (
+            {hasRole('detective') && (
               <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
                 <div className="px-4 py-5 sm:px-6">
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Lab Technician Dashboard
+                    Detective Dashboard
                   </h3>
                   <p className="mt-1 max-w-2xl text-sm text-gray-500">
                     Process and analyze evidence
@@ -209,11 +209,11 @@ const Dashboard = () => {
               </div>
             )}
             
-            {checkUserRole('legal') && (
+            {hasRole('supervisor') && (
               <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
                 <div className="px-4 py-5 sm:px-6">
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Legal Officer Dashboard
+                    Supervisor Dashboard
                   </h3>
                   <p className="mt-1 max-w-2xl text-sm text-gray-500">
                     Review evidence and cases
@@ -233,7 +233,7 @@ const Dashboard = () => {
                     </div>
                     <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-2 sm:gap-4 sm:px-6">
                       <dt className="text-sm font-medium text-gray-500">
-                        Court Submissions
+                        Evidence Submissions
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -247,73 +247,183 @@ const Dashboard = () => {
             )}
             
             {/* Display this if user account is still pending approval */}
-            {currentUser?.status === 'pending' && (
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+            {currentUser?.approved === false && (
+              <div className="bg-yellow-50 p-4 rounded-md">
                 <div className="flex">
                   <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm text-yellow-700">
-                      Your account is pending approval from an administrator. You'll have limited access until approved.
-                    </p>
+                    <h3 className="text-sm font-medium text-yellow-800">Account Pending Approval</h3>
+                    <div className="mt-2 text-sm text-yellow-700">
+                      <p>Your account is currently awaiting administrator approval. You will have limited access until your account is approved.</p>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
-            
-            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-              <div className="px-4 py-5 sm:px-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                  Recent Activity
-                </h3>
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                  Evidence tracking system updates
-                </p>
+
+            {/* Statistics Section */}
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {/* Total Evidence */}
+              <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="px-4 py-5 sm:p-6">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                      <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dt className="text-sm font-medium text-gray-500 truncate">
+                        Total Evidence
+                      </dt>
+                      <dd className="flex items-baseline">
+                        <div className="text-2xl font-semibold text-gray-900">
+                          {stats.totalEvidence}
+                        </div>
+                      </dd>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-50 px-4 py-4 sm:px-6">
+                  <div className="text-sm">
+                    <Link to="/evidence" className="font-medium text-indigo-600 hover:text-indigo-500">
+                      View all<span className="sr-only"> evidence</span>
+                    </Link>
+                  </div>
+                </div>
               </div>
-              <div className="border-t border-gray-200">
+
+              {/* Pending Verification */}
+              <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="px-4 py-5 sm:p-6">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+                      <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dt className="text-sm font-medium text-gray-500 truncate">
+                        Pending Verification
+                      </dt>
+                      <dd className="flex items-baseline">
+                        <div className="text-2xl font-semibold text-gray-900">
+                          {stats.pendingVerification}
+                        </div>
+                      </dd>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-50 px-4 py-4 sm:px-6">
+                  <div className="text-sm">
+                    <Link to="/verification" className="font-medium text-yellow-600 hover:text-yellow-500">
+                      Review pending<span className="sr-only"> verifications</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recently Added */}
+              <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="px-4 py-5 sm:p-6">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
+                      <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                      </svg>
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dt className="text-sm font-medium text-gray-500 truncate">
+                        Recently Added
+                      </dt>
+                      <dd className="flex items-baseline">
+                        <div className="text-2xl font-semibold text-gray-900">
+                          {stats.recentlyAdded}
+                        </div>
+                      </dd>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-50 px-4 py-4 sm:px-6">
+                  <div className="text-sm">
+                    <Link to="/evidence" className="font-medium text-green-600 hover:text-green-500">
+                      View recent<span className="sr-only"> additions</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Active Cases */}
+              <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="px-4 py-5 sm:p-6">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                      <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dt className="text-sm font-medium text-gray-500 truncate">
+                        Active Cases
+                      </dt>
+                      <dd className="flex items-baseline">
+                        <div className="text-2xl font-semibold text-gray-900">
+                          {stats.activeUsers}
+                        </div>
+                      </dd>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-50 px-4 py-4 sm:px-6">
+                  <div className="text-sm">
+                    <Link to="/cases" className="font-medium text-blue-600 hover:text-blue-500">
+                      View all<span className="sr-only"> cases</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Activity Section */}
+            <div className="mt-6">
+              <h2 className="text-lg font-medium text-gray-900">Recent Activity</h2>
+              <div className="mt-3 bg-white shadow overflow-hidden sm:rounded-md">
                 <ul className="divide-y divide-gray-200">
-                  <li className="p-4">
-                    <div className="flex space-x-3">
-                      <div className="flex-1 space-y-1">
+                  {recentActivity.map((activity) => (
+                    <li key={activity.id}>
+                      <div className="px-4 py-4 sm:px-6">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-sm font-medium">Evidence #1234 Updated</h3>
-                          <p className="text-sm text-gray-500">2 hours ago</p>
+                          <p className="text-sm font-medium text-indigo-600 truncate">
+                            {activity.action}
+                          </p>
+                          <div className="ml-2 flex-shrink-0 flex">
+                            <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                              {activity.user}
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-500">
-                          Lab analysis completed for Case #5678
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                  <li className="p-4">
-                    <div className="flex space-x-3">
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-sm font-medium">New Case #5679 Created</h3>
-                          <p className="text-sm text-gray-500">1 day ago</p>
+                        <div className="mt-2 sm:flex sm:justify-between">
+                          <div className="sm:flex">
+                            <p className="flex items-center text-sm text-gray-500">
+                              {activity.evidenceName}
+                            </p>
+                          </div>
+                          <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                            <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p>
+                              {new Date(activity.timestamp).toLocaleString()}
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-500">
-                          Officer Johnson submitted a new case
-                        </p>
                       </div>
-                    </div>
-                  </li>
-                  <li className="p-4">
-                    <div className="flex space-x-3">
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-sm font-medium">Evidence Transfer Completed</h3>
-                          <p className="text-sm text-gray-500">2 days ago</p>
-                        </div>
-                        <p className="text-sm text-gray-500">
-                          Evidence #1122 transferred from Lab to Legal
-                        </p>
-                      </div>
-                    </div>
-                  </li>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
