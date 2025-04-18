@@ -1,0 +1,52 @@
+/* Base styles for evidence tracking app */
+
+/* General app styling - using Tailwind CSS for most styling */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Add any custom styles not covered by Tailwind here */
+.evidence-card-transition {
+  transition: all 0.3s ease;
+}
+
+.evidence-card-transition:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Animation for evidence submission confirmation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Status pill colors */
+.status-submitted {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.status-processing {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+.status-verified {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.status-rejected {
+  background-color: #FEE2E2;
+  color: #991B1B;
+} 

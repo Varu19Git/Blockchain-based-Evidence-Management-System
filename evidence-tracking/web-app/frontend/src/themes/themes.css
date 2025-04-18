@@ -1,0 +1,172 @@
+/* Theme CSS Variables */
+
+/* Default Theme - Light Modern */
+.default {
+  --primary-color: #4F46E5;
+  --primary-hover: #4338CA;
+  --secondary-color: #0EA5E9;
+  --accent-color: #8B5CF6;
+  --background-color: #F9FAFB;
+  --card-background: #FFFFFF;
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-tertiary: #6B7280;
+  --border-color: #E5E7EB;
+  --success-color: #10B981;
+  --warning-color: #F59E0B;
+  --danger-color: #EF4444;
+  --info-color: #3B82F6;
+  
+  /* Status colors */
+  --status-submitted-bg: #FEF3C7;
+  --status-submitted-text: #92400E;
+  --status-processing-bg: #DBEAFE;
+  --status-processing-text: #1E40AF;
+  --status-verified-bg: #D1FAE5;
+  --status-verified-text: #065F46;
+  --status-rejected-bg: #FEE2E2;
+  --status-rejected-text: #991B1B;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Theme */
+.dark {
+  --primary-color: #6366F1;
+  --primary-hover: #4F46E5;
+  --secondary-color: #0EA5E9;
+  --accent-color: #A78BFA;
+  --background-color: #1F2937;
+  --card-background: #111827;
+  --text-primary: #F9FAFB;
+  --text-secondary: #E5E7EB;
+  --text-tertiary: #9CA3AF;
+  --border-color: #374151;
+  --success-color: #10B981;
+  --warning-color: #F59E0B;
+  --danger-color: #EF4444;
+  --info-color: #3B82F6;
+  
+  /* Status colors */
+  --status-submitted-bg: #78350F;
+  --status-submitted-text: #FEF3C7;
+  --status-processing-bg: #1E3A8A;
+  --status-processing-text: #DBEAFE;
+  --status-verified-bg: #065F46;
+  --status-verified-text: #D1FAE5;
+  --status-rejected-bg: #7F1D1D;
+  --status-rejected-text: #FEE2E2;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Blue Theme */
+.blue {
+  --primary-color: #2563EB;
+  --primary-hover: #1D4ED8;
+  --secondary-color: #0369A1;
+  --accent-color: #4F46E5;
+  --background-color: #EFF6FF;
+  --card-background: #FFFFFF;
+  --text-primary: #1E3A8A;
+  --text-secondary: #1E40AF;
+  --text-tertiary: #3B82F6;
+  --border-color: #BFDBFE;
+  --success-color: #059669;
+  --warning-color: #D97706;
+  --danger-color: #DC2626;
+  --info-color: #2563EB;
+  
+  /* Status colors */
+  --status-submitted-bg: #FEF3C7;
+  --status-submitted-text: #92400E;
+  --status-processing-bg: #BFDBFE;
+  --status-processing-text: #1E40AF;
+  --status-verified-bg: #A7F3D0;
+  --status-verified-text: #065F46;
+  --status-rejected-bg: #FEE2E2;
+  --status-rejected-text: #991B1B;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(37, 99, 235, 0.05);
+  --shadow: 0 1px 3px 0 rgba(37, 99, 235, 0.1), 0 1px 2px 0 rgba(37, 99, 235, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(37, 99, 235, 0.1), 0 2px 4px -1px rgba(37, 99, 235, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(37, 99, 235, 0.1), 0 4px 6px -2px rgba(37, 99, 235, 0.05);
+}
+
+/* High Contrast Theme */
+.high-contrast {
+  --primary-color: #000000;
+  --primary-hover: #1F2937;
+  --secondary-color: #4B5563;
+  --accent-color: #000000;
+  --background-color: #FFFFFF;
+  --card-background: #F3F4F6;
+  --text-primary: #000000;
+  --text-secondary: #1F2937;
+  --text-tertiary: #4B5563;
+  --border-color: #000000;
+  --success-color: #065F46;
+  --warning-color: #92400E;
+  --danger-color: #7F1D1D;
+  --info-color: #1E40AF;
+  
+  /* Status colors */
+  --status-submitted-bg: #FFFF00;
+  --status-submitted-text: #000000;
+  --status-processing-bg: #00FFFF;
+  --status-processing-text: #000000;
+  --status-verified-bg: #00FF00;
+  --status-verified-text: #000000;
+  --status-rejected-bg: #FF0000;
+  --status-rejected-text: #FFFFFF;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.5);
+}
+
+/* Custom theme - placeholder for user-defined themes */
+.custom {
+  /* Inherits from default theme, to be overridden by user preferences */
+  --primary-color: #4F46E5;
+  --primary-hover: #4338CA;
+  --secondary-color: #0EA5E9;
+  --accent-color: #8B5CF6;
+  --background-color: #F9FAFB;
+  --card-background: #FFFFFF;
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-tertiary: #6B7280;
+  --border-color: #E5E7EB;
+  --success-color: #10B981;
+  --warning-color: #F59E0B;
+  --danger-color: #EF4444;
+  --info-color: #3B82F6;
+  
+  /* Status colors */
+  --status-submitted-bg: #FEF3C7;
+  --status-submitted-text: #92400E;
+  --status-processing-bg: #DBEAFE;
+  --status-processing-text: #1E40AF;
+  --status-verified-bg: #D1FAE5;
+  --status-verified-text: #065F46;
+  --status-rejected-bg: #FEE2E2;
+  --status-rejected-text: #991B1B;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+} 
