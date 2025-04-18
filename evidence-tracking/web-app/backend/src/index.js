@@ -1,14 +1,12 @@
 const express = require('express');
 const cors = require('cors');
-const { create } = require('ipfs-http-client');
 const multer = require('multer');
-const { Gateway, Wallets } = require('fabric-network');
-const FabricCAServices = require('fabric-ca-client');
+const crypto = require('crypto');
 const path = require('path');
-const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('./utils/CAUtil');
-const { buildCCPOrg1, buildWallet } = require('./utils/AppUtil');
 const { Server } = require('socket.io');
 const http = require('http');
+const authRoutes = require('./routes/auth');
+const { authenticateJWT } = require('./utils/auth');
 
 require('dotenv').config();
 
@@ -25,9 +23,6 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// IPFS client setup
-const ipfs = create({ url: process.env.IPFS_URL || 'http://localhost:5001' });
-
 // Multer setup for file uploads
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -36,78 +31,137 @@ const upload = multer({
   },
 });
 
-// Fabric network setup
-const channelName = 'evidencechannel';
-const chaincodeName = 'evidence';
-const mspOrg1 = 'Org1MSP';
-const walletPath = path.join(__dirname, 'wallet');
-const org1UserId = 'appUser';
-
-// Initialize the wallet and create a gateway
-async function initGateway() {
-  try {
-    const ccp = buildCCPOrg1();
-    const caClient = buildCAClient(FabricCAServices, ccp, 'ca.org1.example.com');
-    const wallet = await buildWallet(Wallets, walletPath);
-
-    // Enroll admin if not already enrolled
-    await enrollAdmin(caClient, wallet, mspOrg1);
-    
-    // Register and enroll application user if not already enrolled
-    await registerAndEnrollUser(caClient, wallet, mspOrg1, org1UserId, 'org1.department1');
-
-    const gateway = new Gateway();
-    await gateway.connect(ccp, {
-      wallet,
-      identity: org1UserId,
-      discovery: { enabled: true, asLocalhost: true }
-    });
-
-    return gateway;
-  } catch (error) {
-    console.error('Failed to initialize gateway:', error);
-    throw error;
+// Mock evidence data for testing
+const mockEvidence = [
+  {
+    ID: "EV001",
+    Description: "Surveillance camera footage from Main St",
+    CaseID: "CASE1001",
+    FileHash: "QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o",
+    SubmittedBy: "officer1",
+    SubmittedTime: "2025-04-18T10:00:00Z",
+    Status: "verified",
+    Tags: ["video", "surveillance"],
+    Metadata: JSON.stringify({
+      format: "mp4", 
+      duration: "00:32:15", 
+      location: "Main St & 5th Ave"
+    }),
+  },
+  {
+    ID: "EV002",
+    Description: "Fingerprint from door handle",
+    CaseID: "CASE1001",
+    FileHash: "QmXs5YtpYsLCYkioRFgRRYQTQ1E4Zpfpbj2GRLo4qJ8L9d",
+    SubmittedBy: "officer2",
+    SubmittedTime: "2025-04-18T11:30:00Z",
+    Status: "processing",
+    Tags: ["fingerprint", "physical"],
+    Metadata: JSON.stringify({
+      type: "latent", 
+      surface: "metal", 
+      quality: "high"
+    }),
+  },
+  {
+    ID: "EV003",
+    Description: "DNA sample from crime scene",
+    CaseID: "CASE1002",
+    FileHash: "QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn",
+    SubmittedBy: "officer1",
+    SubmittedTime: "2025-04-19T09:15:00Z",
+    Status: "submitted",
+    Tags: ["dna", "biological"],
+    Metadata: JSON.stringify({
+      type: "blood", 
+      container: "vial",
+      location: "bathroom"
+    }),
+  },
+  {
+    ID: "EV004",
+    Description: "Witness statement - John Doe",
+    CaseID: "CASE1002",
+    FileHash: "QmQtYfNXWK2sGGcN1fdsgrtH5XYs1FAM9wUWNqjP5ux4FQ",
+    SubmittedBy: "officer2",
+    SubmittedTime: "2025-04-19T14:30:00Z",
+    Status: "verified",
+    Tags: ["statement", "document"],
+    Metadata: JSON.stringify({
+      format: "pdf", 
+      witness: "John Doe",
+      pages: 3
+    }),
+  },
+  {
+    ID: "EV005",
+    Description: "Ballistics report - recovered bullet",
+    CaseID: "CASE1003",
+    FileHash: "QmT1TbZtFqjvbFidLUrD9hPgMZVjRhQP3yWFG7AzBkHEBE",
+    SubmittedBy: "officer1",
+    SubmittedTime: "2025-04-20T11:00:00Z",
+    Status: "processing",
+    Tags: ["ballistics", "report"],
+    Metadata: JSON.stringify({
+      caliber: "9mm", 
+      firearm_type: "handgun",
+      report_id: "BAL-2025-042"
+    }),
   }
-}
+];
 
-// API Routes
+// Routes
+app.use('/api/auth', authRoutes);
+
+// API Routes that require authentication
+app.use('/api/evidence', authenticateJWT);
 
 // Submit evidence
 app.post('/api/evidence', upload.single('file'), async (req, res) => {
   try {
-    const { caseId, description, metadata } = req.body;
+    const { caseId, description, name, type, location, tags } = req.body;
     const file = req.file;
 
-    // Upload file to IPFS
-    const result = await ipfs.add(file.buffer);
-    const ipfsHash = result.path;
+    // Generate a mock IPFS hash
+    const mockIpfsHash = `Qm${crypto.randomBytes(16).toString('hex')}`;
+    
+    // Calculate file hash if file exists
+    const fileHash = file ? 
+      crypto.createHash('sha256').update(file.buffer).digest('hex') : 
+      `hash_${Date.now()}`;
 
-    // Calculate file hash
-    const fileHash = crypto.createHash('sha256').update(file.buffer).digest('hex');
-
-    // Submit to blockchain
-    const gateway = await initGateway();
-    const network = await gateway.getNetwork(channelName);
-    const contract = network.getContract(chaincodeName);
-
+    // Create a new evidence record
     const evidenceId = `EV${Date.now()}`;
-    await contract.submitTransaction(
-      'CreateEvidence',
-      evidenceId,
-      caseId,
-      description,
-      fileHash,
-      ipfsHash,
-      req.user.id, // Assuming user authentication is implemented
-      metadata
-    );
+    const newEvidence = {
+      ID: evidenceId,
+      Description: description,
+      CaseID: caseId,
+      FileHash: fileHash,
+      SubmittedBy: req.user.id, // Use authenticated user ID
+      SubmittedTime: new Date().toISOString(),
+      Status: "submitted",
+      Tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+      Metadata: JSON.stringify({
+        name,
+        type,
+        location,
+        ipfsHash: mockIpfsHash
+      }),
+    };
+
+    // Add to mock DB
+    mockEvidence.push(newEvidence);
 
     // Notify connected clients
-    io.emit('evidenceUpdated', { type: 'CREATE', evidenceId });
+    io.emit('evidenceUpdated', { 
+      type: 'CREATE', 
+      evidenceId,
+      submittedBy: `${req.user.firstName} ${req.user.lastName}`
+    });
 
     res.status(201).json({
       evidenceId,
-      ipfsHash,
+      ipfsHash: mockIpfsHash,
       fileHash
     });
   } catch (error) {
@@ -119,14 +173,20 @@ app.post('/api/evidence', upload.single('file'), async (req, res) => {
 // Get all evidence
 app.get('/api/evidence', async (req, res) => {
   try {
-    const gateway = await initGateway();
-    const network = await gateway.getNetwork(channelName);
-    const contract = network.getContract(chaincodeName);
-
-    const result = await contract.evaluateTransaction('GetAllEvidence');
-    const evidence = JSON.parse(result.toString());
-
-    res.json(evidence);
+    // Filter evidence based on user role and permissions
+    let filteredEvidence = [...mockEvidence];
+    
+    // Only administrators and supervisors can see all evidence
+    // Officers and detectives see only evidence related to their cases
+    if (req.user.role !== 'admin' && req.user.role !== 'supervisor') {
+      filteredEvidence = mockEvidence.filter(e => 
+        e.SubmittedBy === req.user.id || 
+        // In a real app, we would check if the user is assigned to the case
+        e.CaseID === 'CASE1001' // Mock case assignment for testing
+      );
+    }
+    
+    res.json(filteredEvidence);
   } catch (error) {
     console.error('Error getting evidence:', error);
     res.status(500).json({ error: 'Failed to get evidence' });
@@ -136,17 +196,67 @@ app.get('/api/evidence', async (req, res) => {
 // Get evidence by ID
 app.get('/api/evidence/:id', async (req, res) => {
   try {
-    const gateway = await initGateway();
-    const network = await gateway.getNetwork(channelName);
-    const contract = network.getContract(chaincodeName);
-
-    const result = await contract.evaluateTransaction('ReadEvidence', req.params.id);
-    const evidence = JSON.parse(result.toString());
-
+    const evidence = mockEvidence.find(e => e.ID === req.params.id);
+    
+    if (!evidence) {
+      return res.status(404).json({ error: 'Evidence not found' });
+    }
+    
+    // Check if user has permission to view this evidence
+    if (req.user.role !== 'admin' && req.user.role !== 'supervisor') {
+      // Check if the user submitted this evidence or is assigned to the case
+      const hasAccess = evidence.SubmittedBy === req.user.id || evidence.CaseID === 'CASE1001';
+      
+      if (!hasAccess) {
+        return res.status(403).json({ error: 'You do not have permission to access this evidence' });
+      }
+    }
+    
     res.json(evidence);
   } catch (error) {
     console.error('Error getting evidence:', error);
     res.status(500).json({ error: 'Failed to get evidence' });
+  }
+});
+
+// Update evidence status (supervisor only)
+app.put('/api/evidence/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    // Only supervisors can update evidence status
+    if (req.user.role !== 'supervisor' && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Only supervisors can update evidence status' });
+    }
+    
+    // Valid status values
+    const validStatus = ['submitted', 'processing', 'verified', 'rejected'];
+    if (!validStatus.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status value' });
+    }
+    
+    const evidenceIndex = mockEvidence.findIndex(e => e.ID === id);
+    
+    if (evidenceIndex === -1) {
+      return res.status(404).json({ error: 'Evidence not found' });
+    }
+    
+    // Update status
+    mockEvidence[evidenceIndex].Status = status;
+    
+    // Notify connected clients
+    io.emit('evidenceUpdated', { 
+      type: 'UPDATE', 
+      evidenceId: id,
+      status,
+      updatedBy: `${req.user.firstName} ${req.user.lastName}`
+    });
+    
+    res.json({ message: 'Evidence status updated', evidence: mockEvidence[evidenceIndex] });
+  } catch (error) {
+    console.error('Error updating evidence status:', error);
+    res.status(500).json({ error: 'Failed to update evidence status' });
   }
 });
 

@@ -52,13 +52,13 @@ The Evidence Tracking System provides a secure, transparent, and tamper-proof pl
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/evidence-tracking.git
-cd evidence-tracking
+git clone https://github.com/Varu19Git/Blockchain-based-Evidence-Management-System.git
+cd Blockchain-based-Evidence-Management-System
 ```
 
 2. Install backend dependencies
 ```bash
-cd web-app/backend
+cd evidence-tracking/web-app/backend
 npm install
 ```
 
@@ -81,6 +81,109 @@ npm start
 ```
 
 6. The application should be running at http://localhost:3000
+
+## Running on This Device
+
+To run the application on your current device:
+
+1. Start the backend server:
+```bash
+cd /home/tuf/go/src/github.com/Varu19Git/fabric-samples/evidence-tracking/web-app/backend
+npm start
+```
+
+2. In a separate terminal, start the frontend:
+```bash
+cd /home/tuf/go/src/github.com/Varu19Git/fabric-samples/evidence-tracking/web-app/frontend
+npm start
+```
+
+## Test Credentials
+
+You can use the following credentials to test the application:
+
+### Admin User
+- **Email:** admin@evidencetrack.org
+- **Password:** admin123
+
+### Officer
+- **Email:** jsmith@police.gov
+- **Password:** password123
+
+### Supervisor
+- **Email:** mjohnson@police.gov
+- **Password:** password123
+
+### Detective
+- **Email:** dcooper@police.gov
+- **Password:** password123
+
+### Pending Approval User
+- **Email:** rwilson@police.gov
+- **Password:** password123
+
+## Closing and Reopening the Project
+
+### To Close the Project Safely:
+
+1. Stop the frontend server by pressing `Ctrl+C` in its terminal
+2. Stop the backend server by pressing `Ctrl+C` in its terminal
+3. If running Docker containers for blockchain (future implementation):
+```bash
+docker-compose down
+```
+
+### To Reopen the Project:
+
+1. Navigate to the project directory:
+```bash
+cd /home/tuf/go/src/github.com/Varu19Git/fabric-samples/evidence-tracking
+```
+
+2. Start the backend:
+```bash
+cd web-app/backend
+npm start
+```
+
+3. In a new terminal, start the frontend:
+```bash
+cd /home/tuf/go/src/github.com/Varu19Git/fabric-samples/evidence-tracking/web-app/frontend
+npm start
+```
+
+## Customizing the UI
+
+The application uses React components and Tailwind CSS for styling, making it easy to customize:
+
+1. Main UI components are located in:
+```
+evidence-tracking/web-app/frontend/src/components/
+```
+
+2. Page components are in:
+```
+evidence-tracking/web-app/frontend/src/pages/
+```
+
+3. To modify styles, edit the Tailwind configuration:
+```
+evidence-tracking/web-app/frontend/tailwind.config.js
+```
+
+## Adding or Modifying Test Data
+
+The application includes mock data for testing. To modify this:
+
+1. Edit the mock evidence data in:
+```
+evidence-tracking/web-app/backend/src/index.js
+```
+
+2. Edit the mock user data in:
+```
+evidence-tracking/web-app/backend/src/utils/auth.js
+```
 
 ## Project Structure
 

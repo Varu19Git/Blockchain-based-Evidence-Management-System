@@ -10,7 +10,7 @@ import { useAuth } from '../context/AuthContext';
  * @returns {JSX.Element} The protected route component
  */
 const ProtectedRoute = ({ allowedRoles }) => {
-  const { isAuthenticated, loading, user, hasRole } = useAuth();
+  const { isAuthenticated, loading, currentUser, hasRole } = useAuth();
 
   // Show loading state
   if (loading) {
@@ -52,7 +52,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
             You don't have permission to access this page. This page requires {Array.isArray(allowedRoles) ? allowedRoles.join(' or ') : allowedRoles} role.
           </p>
           <p className="mt-2 text-xs text-gray-500">
-            Your current role: {user?.role}
+            Your current role: {currentUser?.role}
           </p>
         </div>
       </div>

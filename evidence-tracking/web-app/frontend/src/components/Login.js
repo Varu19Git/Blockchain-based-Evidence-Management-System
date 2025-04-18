@@ -10,17 +10,17 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState('');
   
-  const { login, error, currentUser } = useAuth();
+  const { login, error, currentUser, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
   // Redirect if already logged in
   useEffect(() => {
-    if (currentUser) {
+    if (isAuthenticated) {
       const redirectTo = location.state?.from?.pathname || '/dashboard';
       navigate(redirectTo, { replace: true });
     }
-  }, [currentUser, navigate, location]);
+  }, [isAuthenticated, navigate, location]);
   
   // Display auth context errors
   useEffect(() => {

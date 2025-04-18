@@ -24,14 +24,14 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('authToken');
+        const authToken = localStorage.getItem('authToken');
         
-        if (token) {
+        if (authToken) {
           // Set the auth header
-          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
           
           // Verify the token with backend
-          const response = await axios.get('/api/auth/me');
+          const response = await axios.get(`${API_URL}/auth/me`);
           
           if (response.data && response.data.user) {
             setCurrentUser(response.data.user);
@@ -59,20 +59,17 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     
     try {
-      // For demo purposes, simulate a login response
-      // In production, this would be an actual API call
+      const response = await axios.post(`${API_URL}/auth/login`, { email, password });
       
-      // Simulated login API call
-      const response = await axios.post('/api/auth/login', { email, password });
-      
-      if (response.data.token) {
+      if (response.data && response.data.token) {
         localStorage.setItem('authToken', response.data.token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
         setCurrentUser(response.data.user);
         return { success: true };
       } else {
-        setError('Invalid credentials');
-        return { success: false, error: 'Invalid credentials' };
+        const errorMessage = 'Invalid credentials';
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Failed to login';
@@ -86,14 +83,14 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     
     try {
-      // Simulated registration API call
-      const response = await axios.post('/api/auth/register', userData);
+      const response = await axios.post(`${API_URL}/auth/register`, userData);
       
-      if (response.data.success) {
+      if (response.data && response.data.success) {
         return { success: true };
       } else {
-        setError(response.data.message || 'Registration failed');
-        return { success: false, error: response.data.message };
+        const errorMessage = response.data?.message || 'Registration failed';
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Failed to register';
@@ -102,25 +99,39 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
+  // Logout function
   const logout = () => {
     localStorage.removeItem('authToken');
     delete axios.defaults.headers.common['Authorization'];
     setCurrentUser(null);
   };
   
-  const hasRole = (role) => {
-    if (!currentUser) return false;
-    return currentUser.role === role;
+  // Check if user has required role(s)
+  const hasRole = (requiredRoles) => {
+    if (!currentUser || !currentUser.role) return false;
+    
+    // If requiredRoles is an array, check if user has any of the roles
+    if (Array.isArray(requiredRoles)) {
+      return requiredRoles.includes(currentUser.role);
+    }
+    
+    // If requiredRoles is a string, check if user has that role
+    return currentUser.role === requiredRoles;
   };
+  
+  // Calculate isAuthenticated from currentUser
+  const isAuthenticated = Boolean(currentUser);
   
   const value = {
     currentUser,
+    user: currentUser, // Alias for compatibility with ProtectedRoute
     loading,
     error,
     login,
     register,
     logout,
-    hasRole
+    hasRole,
+    isAuthenticated
   };
   
   return (
